@@ -36,7 +36,11 @@ class ShoutsController < ApplicationController
             user_id = decoded_token[0]['user_id']
             user = User.find(user_id)
             shout = Shout.create!(user: user, body: params['body'])
-            render json: shout.to_json()
+            shouts = user.shouts
+            render json: shouts.to_json(
+            only: [:id, :body, :created_at, :likeCount, :commentCount],
+            include: [user: {only: [:username, :imgUrl]}]
+        )
         end
     end
 

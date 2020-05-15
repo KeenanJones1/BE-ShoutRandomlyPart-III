@@ -15,9 +15,11 @@ class UsersController < ApplicationController
         decoded_token = JWT.decode(token, 'secret', true, { algorithm: 'HS256'})
         user_id = decoded_token[0]['user_id']
         user = User.find(user_id)
+        
         followed_users_ids = user.followed_users.map{|follow| follow.id }
         all_users = User.all.reject {|user| followed_users_ids.include? user.id }
         
+        # remove user from all_users list
         render json: all_users.to_json(
             only: [:username, :id, :imgUrl, :bio], include:[followed_users: {only: [:username, :imgUrl, :bio]}]
             )
@@ -41,12 +43,30 @@ class UsersController < ApplicationController
 
     def update
         # Update only the current_user profile. check with token
-        byebug
+        # @profile.avatar.attach(params[:file])
+        # byebug
+        token = request.headers[:Authorization].split(' ')[1]
+        decoded_token = JWT.decode(token, 'secret', true, { algorithm: 'HS256'})
+        user_id = decoded_token[0]['user_id']
+        user = User.find(user_id)
+
+        if params['image']
+        user.image.attach(params['image'])
+        
+        imgUrl = url_for(user.image)
+        user.update(imgUrl: imgUrl)
+        else 
+            user.update!(bio: params['body'])
+
+        end
+        render json: user.to_json(
+            only: [:username, :imgUrl, :bio], include: [shouts:{only: [:id, :body, :likeCount, :commentCount, :created_at, :updated_at]}, comments: {only: [:id, :body, :shout_id]},  ]
+        )
     end
 
     private
     def user_params
-        params.require(:user).permit(:username, :password, :first_name, :bio, :last_name, :imgUrl)
+        params.require(:user).permit(:username, :image, :password, :first_name, :bio, :last_name, :imgUrl)
 
     end
 

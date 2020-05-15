@@ -11,6 +11,8 @@ Rails.application.routes.draw do
   resources :users, only: [:index, :show, :update]
 
   get 'myuser', to: 'users#show', as: '/myuser'
+  patch 'profile', to: 'users#update', as: '/profile'
+
   post 'signup', to: 'users#create', as: '/signup'
 
   post 'unlike', to: 'likes#destroy', as: '/unlike'
