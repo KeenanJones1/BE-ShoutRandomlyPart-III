@@ -34,7 +34,21 @@ class RelationshipsController < ApplicationController
 
     def destroy
         # delete a realtionship and return a message
-        byebug
+        token = request.headers[:Authorization].split(' ')[1]
+        decoded_token = JWT.decode(token, 'secret', true, { algorithm: 'HS256'})
+        user_id = decoded_token[0]['user_id']
+        user = User.find(user_id)
+        
+
+        
+        relationship = Relationship.find_by(followed_id: params['followedUserId'])
+        relationship.delete
+
+
+        # byebug
+        render json: user.to_json(
+            only: [:username, :imgUrl, :bio], include: [followed_users: {only: [:id, :username, :imgUrl, :bio]}, shouts:{only: [:id, :body, :likeCount, :commentCount, :created_at, :updated_at]}, comments: {only: [:id, :body, :shout_id]},  ]
+        )
     end
 
 end

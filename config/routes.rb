@@ -16,6 +16,8 @@ Rails.application.routes.draw do
   post 'signup', to: 'users#create', as: '/signup'
 
   post 'unlike', to: 'likes#destroy', as: '/unlike'
+  post 'unfollow', to: 'relationships#destroy', as: '/unfollow'
+
   post 'login', to: 'auth#create', as: '/login'
   get 'current_user', to: 'auth#show', as: '/current_user'
   

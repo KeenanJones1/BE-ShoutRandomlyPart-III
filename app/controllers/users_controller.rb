@@ -36,7 +36,7 @@ class UsersController < ApplicationController
         
 
         render json: user.to_json(
-            only: [:username, :imgUrl, :bio], include: [shouts:{only: [:id, :body, :likeCount, :commentCount, :created_at, :updated_at]}, comments: {only: [:id, :body, :shout_id]},  ]
+            only: [:username, :imgUrl, :bio], include: [followed_users: {only: [:id, :username, :imgUrl, :bio]}, shouts:{only: [:id, :body, :likeCount, :commentCount, :created_at, :updated_at]}, comments: {only: [:id, :body, :shout_id]},  ]
         )
        
     end

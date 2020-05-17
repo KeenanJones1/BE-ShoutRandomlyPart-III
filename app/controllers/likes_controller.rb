@@ -11,7 +11,7 @@ class LikesController < ApplicationController
         shout = Shout.find(params['shoutId'])
         
         if  shout.likes.any?{|like| like.user_id === user_id}
-            render json: {error: 'Already Liked'}, status: 403
+            render json: shout.to_json(only: [:id, :body, :created_at, :likeCount, :commentCount], include: [user: {only: [:id, :username, :imgUrl]}]), status: 403, error: 'Already Liked'
         else
             like = Like.create!(user_id: user_id, shout_id: params['shoutId'])
             likeCount = shout.likeCount + 1
@@ -36,7 +36,7 @@ class LikesController < ApplicationController
             render json: shout.to_json(only: [:id, :body, :created_at, :likeCount, :commentCount], include: [user: {only: [:id, :username, :imgUrl]}])
         else
 
-            render json: {error: 'Not Liked'}, status: 403
+            render json: shout.to_json(only: [:id, :body, :created_at, :likeCount, :commentCount], include: [user: {only: [:id, :username, :imgUrl]}]), status: 403, error: 'Not Liked'
         end
         
     end
